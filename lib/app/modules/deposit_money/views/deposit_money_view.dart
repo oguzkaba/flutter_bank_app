@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bank_app/app/common/elevated_button_widget.dart';
+import 'package:flutter_bank_app/app/routes/app_pages.dart';
 
 import 'package:get/get.dart';
 
@@ -82,88 +84,85 @@ class DepositMoneyView extends GetView<DepositMoneyController> {
 
   Column _tabview1() {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Padding(
-          padding:
-              EdgeInsets.only(top: Get.height * .07, bottom: Get.height * .1),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Obx(() => Text(controller.drawPrice.value.toString(),
-                  style: TextStyle(
-                      color: controller.drawPrice.value == 0
-                          ? Colors.black.withOpacity(.3)
-                          : Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 60))),
-              SizedBox(width: 10),
-              Obx(() => Text('TL',
-                  style: TextStyle(
-                      color: controller.drawPrice.value == 0
-                          ? Colors.black.withOpacity(.3)
-                          : Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30)))
-            ],
-          ),
-        ),
-        SizedBox(height: 50, child: Obx(() => _buildChips()!)),
-        SizedBox(height: 10),
-        InkWell(
-          onTap: () => Get.bottomSheet(
-              SizedBox(
-                height: Get.height / 5,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Text('Lütfen bir hesap seç',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20)),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('İzmit e5 ( **** 4527)',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16)),
-                        Icon(Icons.check)
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              backgroundColor: Colors.white),
-          child: Container(
-              padding: EdgeInsets.all(20),
-              width: Get.width * .9,
-              height: 80,
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(10)),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                  top: Get.height * .07, bottom: Get.height * .1),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text('GÖNDEREN',
+                  Obx(
+                    () => IntrinsicWidth(
+                      child: TextField(
+                        cursorColor: Colors.black,
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 58),
+                        maxLength: 5,
+                        textDirection: TextDirection.rtl,
+                        decoration: InputDecoration(
+                            counterText: '',
+                            border: InputBorder.none,
+                            hintText: '0',
+                            hintTextDirection: TextDirection.rtl,
+                            hintStyle: TextStyle(
+                                color: controller.drawPrice.value == 0
+                                    ? Colors.black.withOpacity(.3)
+                                    : Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 58)),
+                        controller: controller.tcontroller,
+                        keyboardType: TextInputType.number,
+                        onChanged: (value) => controller.drawPrice.value =
+                            int.tryParse(value) ?? 0,
+                      ),
+                    ),
+                  ),
+                  // style: TextStyle(
+                  //     color: controller.drawPrice.value == 0
+                  //         ? Colors.black.withOpacity(.3)
+                  //         : Colors.black,
+                  //     fontWeight: FontWeight.bold,
+                  //     fontSize: 60))),
+                  SizedBox(width: 10),
+                  Obx(() => Text('TL',
                       style: TextStyle(
-                          color: Colors.black54, fontWeight: FontWeight.bold)),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('İzmit e5 ( **** 4527)',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      Icon(Icons.keyboard_arrow_down)
-                    ],
-                  )
+                          color: controller.drawPrice.value == 0
+                              ? Colors.black.withOpacity(.3)
+                              : Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30)))
                 ],
-              )),
-        )
+              ),
+            ),
+            SizedBox(height: 50, child: Obx(() => _buildChips()!)),
+            SizedBox(height: 10),
+            _selectAccountDropDown(),
+          ],
+        ),
+        Expanded(
+            child: Align(
+          alignment: Alignment.bottomCenter,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 15),
+            child: Obx(() => ElevatedButtonWidget(
+                  width: Get.width * .8,
+                  title: 'Devam',
+                  tap: controller.drawPrice == 0
+                      ? null
+                      : () => Get.toNamed(Routes.HOME),
+                )),
+          ),
+        ))
       ],
     );
   }
-
-  _selectAccountDialog() {}
 
   _tabBar(TabController? tabController) {
     return TabBar(
@@ -201,8 +200,10 @@ class DepositMoneyView extends GetView<DepositMoneyController> {
         selectedColor: Colors.grey[300],
         onSelected: (bool selected) {
           if (selected) {
+            FocusScope.of(Get.context!).requestFocus(FocusNode());
             controller.selectedChip.value = i;
             controller.drawPrice.value = priceList[i];
+            controller.tcontroller.text = controller.drawPrice.value.toString();
           }
         },
       );
@@ -214,6 +215,83 @@ class DepositMoneyView extends GetView<DepositMoneyController> {
       // This next line does the trick.
       scrollDirection: Axis.horizontal,
       children: chips,
+    );
+  }
+
+  InkWell _selectAccountDropDown() {
+    return InkWell(
+      onTap: () => _showSelectAccountDialog(),
+      child: Container(
+          padding: EdgeInsets.all(20),
+          width: Get.width * .9,
+          height: 80,
+          decoration: BoxDecoration(
+              color: Colors.white, borderRadius: BorderRadius.circular(10)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('GÖNDEREN',
+                  style: TextStyle(
+                      color: Colors.black54, fontWeight: FontWeight.bold)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Obx(() => Text(controller.selectAccount.value,
+                      style: TextStyle(fontWeight: FontWeight.bold))),
+                  Icon(Icons.keyboard_arrow_down)
+                ],
+              )
+            ],
+          )),
+    );
+  }
+
+  Future _showSelectAccountDialog() {
+    return Get.bottomSheet(
+        SizedBox(
+          height: Get.height / 3,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Center(
+                  child: SizedBox(
+                      width: Get.width * .1,
+                      child: Divider(color: Colors.grey, thickness: 2))),
+              Text('Lütfen bir hesap seç',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              for (var j = 0; j < accountList.length; j++)
+                _accountListItem(accountList[j], j),
+            ],
+          ),
+        ),
+        backgroundColor: Colors.white);
+  }
+
+  Padding _accountListItem(String accountName, int selected) {
+    return Padding(
+      padding: EdgeInsets.only(top: selected == 0 ? 30 : 0, right: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          TextButton(
+            onPressed: () {
+              controller.selectAccount.value = accountList[selected];
+              Get.back();
+            },
+            child: Text(accountName,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color:
+                        controller.selectAccount.value == accountList[selected]
+                            ? Colors.black
+                            : Colors.grey)),
+          ),
+          controller.selectAccount.value == accountList[selected]
+              ? Icon(Icons.check_circle_rounded)
+              : Container()
+        ],
+      ),
     );
   }
 }

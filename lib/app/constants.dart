@@ -21,3 +21,9 @@ const List<String> circleTextList = [
 ];
 
 const List<int> priceList = [100, 200, 300, 500, 1500];
+
+const List<String> accountList = [
+  'İzmit e5 ( **** 4527)',
+  'İstanbul d100 ( **** 2132)',
+  'Ankara e200 ( **** 1155)'
+];

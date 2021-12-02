@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bank_app/app/common/elevated_button_widget.dart';
 import 'package:flutter_bank_app/app/constants.dart';
 import 'package:flutter_bank_app/app/routes/app_pages.dart';
 
@@ -45,8 +46,20 @@ class LoginView extends GetView<LoginController> {
           child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
             Padding(
               padding: EdgeInsets.only(top: Get.height * .07, bottom: 5),
-              child: CircleAvatar(
-                  radius: 36, backgroundImage: NetworkImage(profileImage)),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                        blurRadius: 0, color: Colors.grey, spreadRadius: 1)
+                  ],
+                ),
+                child: CircleAvatar(
+                    backgroundColor: Colors.white,
+                    radius: 42,
+                    backgroundImage: NetworkImage(profileImage)),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 8.0, bottom: 15),
@@ -70,24 +83,11 @@ class LoginView extends GetView<LoginController> {
                 )),
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
-              child: SizedBox(
+              child: ElevatedButtonWidget(
                 width: Get.width * .62,
-                height: 50,
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: primaryRed,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50)),
-                    ),
-                    onPressed: () => Get.toNamed(Routes.HOME),
-                    child: Text(
-                      'Giriş',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline),
-                    )),
+                title: 'Giriş',
+                tap: () => Get.toNamed(Routes.HOME),
+                textdec: TextDecoration.underline,
               ),
             ),
           ]),
